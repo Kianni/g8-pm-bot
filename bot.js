@@ -1,6 +1,12 @@
 "use strict";
 exports.__esModule = true;
 var TelegramBot = require('node-telegram-bot-api');
+var http = require('http');
+var server = http.createServer(function (req, res) {
+    res.writeHead(200);
+    res.end('ok');
+});
+server.listen(process.env.PORT || 5000);
 var dotenv = require("dotenv");
 var path = require("path");
 dotenv.config();

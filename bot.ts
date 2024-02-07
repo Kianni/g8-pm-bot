@@ -1,5 +1,12 @@
 const TelegramBot = require('node-telegram-bot-api');
 
+const http = require('http');
+const server = http.createServer((req, res) => {
+  res.writeHead(200);
+  res.end('ok');
+});
+server.listen(process.env.PORT || 5000);
+
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 dotenv.config();
