@@ -2,6 +2,8 @@
 exports.__esModule = true;
 var TelegramBot = require('node-telegram-bot-api');
 var http = require('http');
+var cheerio = require('cheerio');
+var https = require('https');
 var server = http.createServer(function (req, res) {
     res.writeHead(200);
     res.end('ok');
@@ -23,6 +25,39 @@ bot.onText(/\/triangle/, function (msg, match) {
     var chatId = msg.chat.id;
     var photo = path.join(__dirname, './assets/pm_triangle.jpg');
     bot.sendPhoto(chatId, photo, { caption: 'go to the \/topics 👉' });
+});
+bot.onText(/\/aboutus/, function (msg, match) {
+    var chatId = msg.chat.id;
+    var options = {
+        hostname: 'raw.githubusercontent.com',
+        port: 443,
+        path: '/eerikv/pmnotebook_group8/main/index.html',
+        method: 'GET',
+        headers: {
+            'Authorization': 'token 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'
+        }
+    };
+    var req = https.request(options, function (res) {
+        var data = '';
+        res.on('data', function (chunk) {
+            data += chunk;
+        });
+        res.on('end', function () {
+            var $ = cheerio.load(data);
+            var content = $('main.content-container.dark div.content div.content-header span').eq(1).text();
+            content = content.trim().replace(/\s\s+/g, ' ');
+            if (content) {
+                bot.sendMessage(chatId, content);
+            }
+            else {
+                console.log('Content is empty');
+            }
+        });
+    });
+    req.on('error', function (err) {
+        console.log('Error: ' + err.message);
+    });
+    req.end();
 });
 bot.onText(/\/topics/, function (msg) {
     var chatId = msg.chat.id;
